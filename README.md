@@ -61,16 +61,40 @@ attribution text to use.
 Ready-made agent skills and a Claude Code plugin (verify figures, peer
 benchmarks, rates & FX, hiring checks): https://github.com/Askrion/factanker-skills
 
-## REST (same data, plain URLs)
+## REST (same data, plain URLs) — large calls, no key
+
+One request returns a whole dataset:
 
 ```
-curl 'https://factanker.com/api/query/company_financials?cik=320193&metric=revenue&year_from=2023'
-curl 'https://factanker.com/api/lookup_entity?q=cik:0000936468'
+# Every fact on record for Apple — 500 facts, each with its source document
+curl 'https://factanker.com/api/get_facts?entity=cik:0000320193'
+
+# Apple revenue for every reported quarter and year
+curl 'https://factanker.com/api/query/company_financials?cik=320193&metric=revenue&period=all'
+
+# Net income of Apple, Microsoft, Amazon, Alphabet, Nvidia and Meta since 2015
+curl 'https://factanker.com/api/query/metric_for_tickers?ciks=320193,789019,1018724,1652044,1045810,1326801&metric=net_income&year_from=2015'
+
+# JPMorgan Chase Bank total assets, quarter by quarter (FFIEC Call Reports)
+curl 'https://factanker.com/api/query/bank_metrics?rssd=852218&metric=total_assets'
+
+# One period only: 2025, 2025Q4 or 2025-12-31
+curl 'https://factanker.com/api/get_facts?entity=rssd:852218&predicate=total_assets&period=2025Q4'
+
+# German wind power by district (Marktstammdatenregister)
+curl 'https://factanker.com/api/query/mastr_region?level=landkreis&energy_source=wind'
+
+# Free-text search
 curl 'https://factanker.com/api/search_facts?q=Kroger%20net%20income'
-curl 'https://factanker.com/api/query/mastr_region?level=landkreis&region=Aurich&energy_source=wind'
 ```
 
-Every fact URL serves JSON under `Accept: application/json` (same URL as HTML).
+All endpoints with tested examples: https://factanker.com/api/docs ·
+endpoint list: https://factanker.com/api/ · OpenAPI: https://factanker.com/api/openapi.json
+
+A call with a missing or wrong parameter answers with the correct usage and
+working example URLs. MCP tool names (`get_timeseries`, `compare_entities`, ...)
+also work as REST paths. Every fact URL serves JSON under
+`Accept: application/json` (same URL as HTML).
 
 ## Citation
 
